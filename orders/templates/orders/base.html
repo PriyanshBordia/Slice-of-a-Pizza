@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
@@ -22,9 +24,12 @@
 			}
 		</style>
 
-        <link href = "{% url_for('static', filename = 'orders/styles/style.css') %}" rel = "stylesheet">
+        <link href = "{% static 'orders/styles/style.css' %}" rel = "stylesheet">
 
         {% block head %}{% endblock %}
+
+        <!-- Icon -->
+        <link href="{% static 'orders/icons/icons8-pizza-48.png' %}" rel="icon">
 
         <title> | Andrømed Pizza </title>
     </head>
@@ -37,18 +42,18 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> -->
                 <div class="navbar-nav ml-auto">
-                    <a class="nav-item nav-link mr-4" href="{% url_for 'index' %}"> User </a>
-                    <a class="nav-item nav-link mr-4" href="{% url_for 'index' %}"> Menue </a>
-                    <a class="nav-item nav-link mr-4" href="{% url_for 'index' %}"> Cart </a>
+                    <a class="nav-item nav-link mr-4" href="{% url 'index' %}"> User </a>
+                    <a class="nav-item nav-link mr-4" href="{% url 'index' %}"> Menue </a>
+                    <a class="nav-item nav-link mr-4" href="{% url 'index' %}"> Cart </a>
                 </div>
             </div>
         </nav>
 
         {% block body %}
         {% endblock %}
-        
+
         <footer class="button">
-            &copy; 2020 Andrømed Pizza's
+            &copy; 2020, Andrømed Pizza's
         </footer>
     </body>
 </html>
