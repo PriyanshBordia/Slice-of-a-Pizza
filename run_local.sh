@@ -1,15 +1,26 @@
-if [[ 7 ]]
-then
-    python3 manage.py runserver
+choice=$1
 
-elif [[ 2 ]]
-then
-    python3 manage.py makemigrations
+while : $choice > 3 || $choice == "view";
+do
+    if [[ $choice == view ]]
+    then
+        open orders/views.py
+        break
 
-elif [[ 3 ]]
-then
-    python3 manage.py migrate
+    elif [[ $choice == 1 ]]
+    then
+        python3 manage.py runserver
+        break
 
-# else
-#     echo "Enter a valid choice!"
-fi
+    elif [[ $choice == 2 ]]
+    then
+        python3 manage.py makemigrations
+        break
+
+    elif [[ $choice == 3 ]]
+    then
+        python3 manage.py migrate
+        break
+
+    fi
+done
