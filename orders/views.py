@@ -13,7 +13,7 @@ def index(request):
         return render(request, "orders/login.html")
 
     else:
-        return render(request, "orders/menue.html", context={"pinnoconame": request.user})
+        return render(request, "orders/index.html", context={"pinnoconame": request.user})
 
 
 def login_view(request):
@@ -44,7 +44,9 @@ def register_view(request):
     email = request.POST["email"]
     password = request.POST["password"]
 
-#Check for username if present in records if yes, raise error 1.Already a user 2.username unavailable
+# Check for username if present in records if yes, raise error
+        # 1. Already a user
+        # 2. username unavailable
     if username in User:
         return render(request, "orders/error.html", context={"message": "Username Already taken!"})
 
