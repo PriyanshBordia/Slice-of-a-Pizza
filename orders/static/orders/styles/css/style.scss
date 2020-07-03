@@ -1,4 +1,3 @@
-
 $sm: 576px;
 $lg: 768px;
 $xl: 1200px;
@@ -7,6 +6,10 @@ $xl: 1200px;
   font-size: 24px !important;
 }
 
+.container {
+    max-width: $sm;
+    margin: auto;
+}
 /*Footer*/
 footer
 {

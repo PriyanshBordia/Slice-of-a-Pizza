@@ -24,7 +24,7 @@
 			}
 		</style>
 
-        <link href = "{% static 'orders/styles/style.css' %}" rel = "stylesheet">
+        <link href = "{% static 'orders/styles/css/style.css' %}" rel = "stylesheet">
 
         {% block head %}{% endblock %}
 
@@ -35,12 +35,12 @@
     </head>
     <body>
         <!-- TODO: Navbar Link to pages across the app.-->
-        <nav>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#"> Pizza's and Subs</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> -->
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto">
                     <a class="nav-item nav-link mr-4" href="{% url 'index' %}"> User </a>
                     <a class="nav-item nav-link mr-4" href="{% url 'index' %}"> Menue </a>
@@ -52,7 +52,7 @@
         {% block body %}
         {% endblock %}
 
-        <footer class="button">
+        <footer class="button fixed-bottom">
             &copy; 2020, Andrømed Pizza's
         </footer>
     </body>
