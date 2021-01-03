@@ -1,33 +1,34 @@
+from django.core import validators
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
-class User(models.Model):
-    first = models.CharField(max_length=64)
-    last = models.CharField(max_length=64)
-    username = models.CharField(max_length=64)
-    email = models.CharField(max_length=64)
-    password = models.CharField(max_length=64)
-    type = models.CharField(max_length=3)
 
-
-class Toppings(models.Model):
-    Topping = models.CharField(max_length=64)
+class Topping(models.Model):
+    name = models.CharField(max_length=64)
 
     def __str__(self):
         return f"{self.Topping}"
 
 
 class Regular_Pizza(models.Model):
+    
     Regular_Pizza = models.CharField(max_length=64)
-    Topz = models.ManyToManyField(Toppings, blank=True, related_name="Rtopz")
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+    
+    toppings = models.ManyToManyField(Topping, blank=True, related_name="addons")
 
     def __str__(self):
         return f"{self.Regular_Pizza}"
 
 
 class Sicilian_Pizza(models.Model):
+
     Sicilian_Pizza = models.CharField(max_length=64)
-    Tops = models.ManyToManyField(Toppings, blank=True, related_name="Stopz")
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+
+    Tops = models.ManyToManyField(Topping, blank=True, related_name="addons")
 
     def __str__(self):
         return f"{self.Sicilian_Pizza}"
@@ -42,24 +43,28 @@ class Subs(models.Model):
 
 
 class Salads(models.Model):
+
     Salad = models.CharField(max_length=64)
-    Price = models.FloatField()
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+
 
     def __str__(self):
         return f"{self.Salad}"
 
 
 class Pasta(models.Model):
+   
     Pasta = models.CharField(max_length=64)
-    Price = models.FloatField()
+    Price = models.FloatField(validators = [MinValueValidator(1)] ,blank=False, null=False)
 
     def __str__(self):
         return f"{self.Pasta}"
 
 
 class Dinner_Platters(models.Model):
+
     Platter = models.CharField(max_length=64)
-    Tops = models.ManyToManyField(Toppings, related_name="Dtopz")
+    Tops = models.ManyToManyField(Toppings, related_name="addons")
 
     def __str__(self):
         return f"{self.Platter}"
