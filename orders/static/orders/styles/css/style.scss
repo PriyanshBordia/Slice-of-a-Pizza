@@ -1,15 +1,31 @@
+$btn-sm: 2in;
+$btn-md: 2.5in;
+$btn-lg: 3in;
+$btn-xl: 4in;
+
 $sm: 576px;
-$lg: 768px;
+$md: 768px;
 $xl: 1200px;
 
-.navbar-brand {
-  font-size: 24px !important;
+
+.navbar-brand
+{
+    font-size: 24px !important;
+}
+
+.nav-item
+{
+    font-size: 20px !important;
 }
 
 .container {
     max-width: $sm;
     margin: auto;
 }
+
+
+
+
 /*Footer*/
 footer
 {
@@ -30,6 +46,5 @@ footer
 
 .button:hover
 {
-    background-color: white;
     color: rgb(120,81,169);
 }
