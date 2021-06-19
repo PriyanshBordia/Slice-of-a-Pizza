@@ -1,7 +1,5 @@
-from django.core import validators
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
 
 # Create your models here.
 
@@ -64,7 +62,7 @@ class Pasta(models.Model):
 class Dinner_Platters(models.Model):
 
     Platter = models.CharField(max_length=64)
-    Tops = models.ManyToManyField(Toppings, related_name="addons")
+    Tops = models.ManyToManyField(Topping, related_name="addons")
 
     def __str__(self):
         return f"{self.Platter}"
