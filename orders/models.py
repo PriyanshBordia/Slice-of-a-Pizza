@@ -1,7 +1,5 @@
-from django.core import validators
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
 
 # Create your models here.
 
@@ -15,9 +13,9 @@ class Topping(models.Model):
 class Regular_Pizza(models.Model):
     
     Regular_Pizza = models.CharField(max_length=64)
-    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False, default=1)
     
-    toppings = models.ManyToManyField(Topping, blank=True, related_name="addons")
+    toppings = models.ManyToManyField(Topping, blank=True, related_name="rpAddons")
 
     def __str__(self):
         return f"{self.Regular_Pizza}"
@@ -26,9 +24,9 @@ class Regular_Pizza(models.Model):
 class Sicilian_Pizza(models.Model):
 
     Sicilian_Pizza = models.CharField(max_length=64)
-    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False, default=1)
 
-    Tops = models.ManyToManyField(Topping, blank=True, related_name="addons")
+    Tops = models.ManyToManyField(Topping, blank=True, related_name="spAddons")
 
     def __str__(self):
         return f"{self.Sicilian_Pizza}"
@@ -45,7 +43,7 @@ class Subs(models.Model):
 class Salads(models.Model):
 
     Salad = models.CharField(max_length=64)
-    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False)
+    Price = models.FloatField(validators=[MinValueValidator(1)], blank=False, null=False, default=1)
 
 
     def __str__(self):
@@ -64,7 +62,7 @@ class Pasta(models.Model):
 class Dinner_Platters(models.Model):
 
     Platter = models.CharField(max_length=64)
-    Tops = models.ManyToManyField(Toppings, related_name="addons")
+    Tops = models.ManyToManyField(Topping, related_name="DPAddons")
 
     def __str__(self):
         return f"{self.Platter}"

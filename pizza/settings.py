@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
-from pathlib import Path
 import environ
 
 env = environ.Env()
 environ.Env.read_env()
 
+import os
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'django_extensions',
+	# 'accounts'
 ]
 
 MIDDLEWARE = [
@@ -78,24 +80,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pizza.wsgi.application'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-    	'ENGINE': 'django.db.backends.postgresql_psycopg2',
+	'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+
+   	'development': {
+        'ENGINE': env('DEV_ENGINE'),
+        'NAME': env('DEV_DB_NAME'),
+        'USER': env('DEV_DB_USER'),
+        'PASSWORD': env('DEV_DB_PASSWORD'),
+        'HOST': env('DEV_DB_HOST'),
+        'PORT': env('DEV_DB_PORT'),
+    },
+
+    'production': {
+        'ENGINE': env('ENGINE'),
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
         'HOST': env('DB_HOST'),
         'PORT': env('DB_PORT'),
     },
-
-    'local': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
 }
 
 
