@@ -7,4 +7,3 @@
 [![GitHub license](https://img.shields.io/github/license/PriyanshBordia/Slice-of-a-Pizza)](https://github.com/PriyanshBordia/Slice-of-a-Pizza/blob/master/LICENSE)
 
 > Dine In or Take away
-
