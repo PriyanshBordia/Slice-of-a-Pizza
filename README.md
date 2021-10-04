@@ -5,6 +5,6 @@
 [![GitHub forks](https://img.shields.io/github/forks/PriyanshBordia/Slice-of-a-Pizza)](https://github.com/PriyanshBordia/Slice-of-a-Pizza/network)
 [![GitHub stars](https://img.shields.io/github/stars/PriyanshBordia/Slice-of-a-Pizza)](https://github.com/PriyanshBordia/Slice-of-a-Pizza/stargazers)
 [![GitHub license](https://img.shields.io/github/license/PriyanshBordia/Slice-of-a-Pizza)](https://github.com/PriyanshBordia/Slice-of-a-Pizza/blob/master/LICENSE)
+[![Documentation Status](https://readthedocs.org/projects/carbonfc/badge/?version=latest)](https://carbonfc.readthedocs.io/en/latest/?badge=latest)
 
-> Dine In or Take away
-
+- Dine In or Take away
