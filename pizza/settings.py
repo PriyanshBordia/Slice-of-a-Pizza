@@ -28,8 +28,7 @@ DEBUG = os.getenv('DEBUG', default=False)
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS'), '127.0.0.1']
 
-
-ADMINS = [('priyansh', 'priyanshbordia3@gmail.com')]
+ADMINS = []
 
 # Application definition
 
