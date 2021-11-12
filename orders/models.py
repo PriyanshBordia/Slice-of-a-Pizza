@@ -11,7 +11,7 @@ class Topping(models.Model):
 	def __str__(self):
 		return f"{self.Topping}"
 
-class Order(model.Model):
+class Order(models.Model):
 
 	Pizza = 1
 	
