@@ -29,13 +29,23 @@ def register_view(request):
     # 1. Already a user
     # 2. username unavailable
     if username in User:
-        return render(request, "orders/error.html", context={"message": "Username Already taken!"})
+        return render(
+            request, "orders/error.html", context={"message": "Username Already taken!"}
+        )
 
     if password != re_password:
-        return render(request, "orders/error.html", context={"message": "Passwords don't match"})
+        return render(
+            request, "orders/error.html", context={"message": "Passwords don't match"}
+        )
 
-    user = User(first_name=first, last_name=last, username=username,
-                email=email, password=password, is_staff=False)
+    user = User(
+        first_name=first,
+        last_name=last,
+        username=username,
+        email=email,
+        password=password,
+        is_staff=False,
+    )
     user.save()
 
 
@@ -49,7 +59,11 @@ def login_view(request):
         login(request, user)
 
     if User.objects.get(username=username, password=password).count() == 0:
-        return render(request, "orders/error.html", context={"message": "Please, register to login!"})
+        return render(
+            request,
+            "orders/error.html",
+            context={"message": "Please, register to login!"},
+        )
 
     user = User.objects.get()
     return render(request, "orders/menue.html", context={"user": user})
