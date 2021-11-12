@@ -19,7 +19,9 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html")
 
-    return render(request, "orders/index.html", context={"pinnoconame": request.user})
+    return render(request,
+                  "orders/index.html",
+                  context={"pinnoconame": request.user})
 
 
 def register_view(request):
@@ -34,14 +36,14 @@ def register_view(request):
     # 1. Already a user
     # 2. username unavailable
     if username in User:
-        return render(
-            request, "orders/error.html", context={"message": "Username Already taken!"}
-        )
+        return render(request,
+                      "orders/error.html",
+                      context={"message": "Username Already taken!"})
 
     if password != re_password:
-        return render(
-            request, "orders/error.html", context={"message": "Passwords don't match"}
-        )
+        return render(request,
+                      "orders/error.html",
+                      context={"message": "Passwords don't match"})
 
     user = User(
         first_name=first,
