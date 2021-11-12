@@ -6,5 +6,4 @@ from .models import User, Toppings, Regular_Pizza, Sicilian_Pizza, Subs, Salads,
 # Create your tests here.
 
 class ModelsTestCase(TestCase):
-
-    def setUp(self):
+    pass
