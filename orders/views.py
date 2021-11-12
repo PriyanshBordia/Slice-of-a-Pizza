@@ -1,11 +1,11 @@
 import time
 
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
 from django.contrib import admin
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 # Create your views here.
 
