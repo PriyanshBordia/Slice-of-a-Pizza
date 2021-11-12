@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import User, Toppings, Regular_Pizza, Sicilian_Pizza, Subs, Salads, Pasta, Dinner_Platters
+from .models import Toppings
 
 # Create your tests here.
 
