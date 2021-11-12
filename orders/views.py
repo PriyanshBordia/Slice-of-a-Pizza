@@ -12,8 +12,7 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html")
 
-    else:
-        return render(request, "orders/index.html", context={"pinnoconame": request.user})
+    return render(request, "orders/index.html", context={"pinnoconame": request.user})
 
 
 def register_view(request):
@@ -49,9 +48,8 @@ def login_view(request):
     if User.objects.get(username=username, password=password).count() == 0:
         return render(request, "orders/error.html", context={"message": "Please, register to login!"})
 
-    else:
-        user = User.objects.get()
-        return render(request, "orders/menue.html", context={"user": user})
+    user = User.objects.get()
+    return render(request, "orders/menue.html", context={"user": user})
 
 
 def logout_view(request):
