@@ -1,0 +1,74 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Menu - Slice of a Pizza{% endblock %}
+
+{% block body %}
+<h2 class="page-title">Our Menu</h2>
+
+<nav class="category-nav">
+    {% for category_label, items in menu_data.items %}
+    <a href="#category-{{ forloop.counter }}" class="category-pill">{{ category_label }}</a>
+    {% endfor %}
+</nav>
+
+{% for category_label, items in menu_data.items %}
+<div id="category-{{ forloop.counter }}" class="menu-category mb-5">
+    <h3 class="category-header">{{ category_label }}</h3>
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card menu-card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-0">{{ item.name }}</h5>
+                    {% if item.size %}
+                    <span class="item-size">{{ item.get_size_display }}</span>
+                    {% endif %}
+                    <p class="price-tag">${{ item.price }}</p>
+                    <form method="POST" action="{% url 'cart_add' item.id %}" class="mt-auto">
+                        {% csrf_token %}
+                        {% if item.toppings_allowed > 0 %}
+                        <div class="mb-2">
+                            <div class="toppings-label">Select up to {{ item.toppings_allowed }} topping{{ item.toppings_allowed|pluralize }}:</div>
+                            <div class="topping-chips">
+                                {% for topping in toppings %}
+                                <div>
+                                    <input class="topping-chip-input topping-checkbox" type="checkbox"
+                                           name="toppings" value="{{ topping.id }}"
+                                           id="topping-{{ item.id }}-{{ topping.id }}"
+                                           data-max="{{ item.toppings_allowed }}"
+                                           data-group="item-{{ item.id }}">
+                                    <label class="topping-chip-label" for="topping-{{ item.id }}-{{ topping.id }}">{{ topping.name }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-brand btn-add-cart">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+<script>
+document.querySelectorAll('.topping-checkbox').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        var group = this.dataset.group;
+        var max = parseInt(this.dataset.max);
+        var checked = document.querySelectorAll('.topping-checkbox[data-group="' + group + '"]:checked');
+        if (checked.length >= max) {
+            document.querySelectorAll('.topping-checkbox[data-group="' + group + '"]:not(:checked)').forEach(function(cb) {
+                cb.disabled = true;
+            });
+        } else {
+            document.querySelectorAll('.topping-checkbox[data-group="' + group + '"]').forEach(function(cb) {
+                cb.disabled = false;
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

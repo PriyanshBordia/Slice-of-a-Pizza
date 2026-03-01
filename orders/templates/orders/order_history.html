@@ -1,0 +1,30 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Order History - Slice of a Pizza{% endblock %}
+
+{% block body %}
+<h2 class="page-title">Order History</h2>
+
+{% if orders %}
+<div class="order-history-list">
+    {% for order in orders %}
+    <div class="order-history-card">
+        <div class="order-history-info">
+            <div class="order-history-id">Order #{{ order.id }}</div>
+            <div class="order-history-date">{{ order.created_at|date:"M j, Y g:i A" }} &middot; {{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+        </div>
+        <div class="order-history-meta">
+            <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
+            <span class="order-history-total">${{ order.total }}</span>
+            <a href="{% url 'order_detail' order.id %}" class="view-link">View Details &rarr;</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>You haven't placed any orders yet.</p>
+    <a href="{% url 'menu' %}" class="btn btn-brand">Browse Menu</a>
+</div>
+{% endif %}
+{% endblock %}

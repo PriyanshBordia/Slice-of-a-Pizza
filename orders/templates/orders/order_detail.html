@@ -1,0 +1,119 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Order #{{ order.id }} - Slice of a Pizza{% endblock %}
+
+{% block body %}
+<div class="order-detail-wrapper">
+    <h2 class="page-title">Order #{{ order.id }}</h2>
+    <p style="color: var(--warm-gray-light); margin-top: -0.75rem; margin-bottom: 1rem; font-size: 0.9rem;">
+        Placed on {{ order.created_at|date:"F j, Y g:i A" }}
+    </p>
+
+    {% if order.status != 'cancelled' %}
+    <div class="order-progress">
+        {% with statuses="placed,preparing,ready,completed" %}
+        {% with current=order.status %}
+        {% for step in "0123" %}
+            {% if forloop.counter0 == 0 %}
+                {% with label="Placed" slug="placed" %}
+                <div class="progress-step {% if current == slug or current == 'preparing' or current == 'ready' or current == 'completed' %}active{% endif %}">
+                    <div class="progress-dot {% if current == 'preparing' or current == 'ready' or current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
+                        <span class="progress-dot-inner"></span>
+                    </div>
+                    <span class="progress-label">{{ label }}</span>
+                </div>
+                {% if current == 'preparing' or current == 'ready' or current == 'completed' %}
+                <div class="progress-line filled"></div>
+                {% else %}
+                <div class="progress-line"></div>
+                {% endif %}
+                {% endwith %}
+            {% endif %}
+            {% if forloop.counter0 == 1 %}
+                {% with label="Preparing" slug="preparing" %}
+                <div class="progress-step {% if current == slug or current == 'ready' or current == 'completed' %}active{% endif %}">
+                    <div class="progress-dot {% if current == 'ready' or current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
+                        <span class="progress-dot-inner"></span>
+                    </div>
+                    <span class="progress-label">{{ label }}</span>
+                </div>
+                {% if current == 'ready' or current == 'completed' %}
+                <div class="progress-line filled"></div>
+                {% else %}
+                <div class="progress-line"></div>
+                {% endif %}
+                {% endwith %}
+            {% endif %}
+            {% if forloop.counter0 == 2 %}
+                {% with label="Ready" slug="ready" %}
+                <div class="progress-step {% if current == slug or current == 'completed' %}active{% endif %}">
+                    <div class="progress-dot {% if current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
+                        <span class="progress-dot-inner"></span>
+                    </div>
+                    <span class="progress-label">{{ label }}</span>
+                </div>
+                {% if current == 'completed' %}
+                <div class="progress-line filled"></div>
+                {% else %}
+                <div class="progress-line"></div>
+                {% endif %}
+                {% endwith %}
+            {% endif %}
+            {% if forloop.counter0 == 3 %}
+                {% with label="Completed" slug="completed" %}
+                <div class="progress-step {% if current == slug %}active{% endif %}">
+                    <div class="progress-dot {% if current == slug %}completed{% endif %}">
+                        <span class="progress-dot-inner"></span>
+                    </div>
+                    <span class="progress-label">{{ label }}</span>
+                </div>
+                {% endwith %}
+            {% endif %}
+        {% endfor %}
+        {% endwith %}
+        {% endwith %}
+    </div>
+    {% else %}
+    <div class="order-progress">
+        <div class="progress-step active">
+            <div class="progress-dot cancelled">
+                <span class="progress-dot-inner"></span>
+            </div>
+            <span class="progress-label">Cancelled</span>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if order.notes %}
+    <p style="margin-bottom: 1.5rem;"><strong>Notes:</strong> {{ order.notes }}</p>
+    {% endif %}
+
+    <div class="card-warm mb-4">
+        <div class="card-body">
+            {% for item in order.items.all %}
+            <div class="order-item-row">
+                <div>
+                    <div class="order-item-name">{{ item.item_name }}</div>
+                    {% if item.toppings_snapshot %}
+                    <div class="order-item-toppings">{{ item.toppings_snapshot }}</div>
+                    {% endif %}
+                </div>
+                <div class="order-item-right">
+                    {{ item.quantity }} &times; ${{ item.item_price }} = ${{ item.subtotal }}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="checkout-total">
+                <span class="checkout-total-label">Total</span>
+                <span class="checkout-total-amount">${{ order.total }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{% url 'order_history' %}" class="view-link">&larr; All Orders</a>
+        <a href="{% url 'menu' %}" class="btn btn-brand">Order Again</a>
+    </div>
+</div>
+{% endblock %}

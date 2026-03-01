@@ -1,0 +1,49 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Checkout - Slice of a Pizza{% endblock %}
+
+{% block body %}
+<div class="checkout-wrapper">
+    <h2 class="page-title">Checkout</h2>
+
+    <div class="card-warm mb-4">
+        <div class="card-body">
+            {% for item in items %}
+            <div class="checkout-item">
+                <div>
+                    <div class="checkout-item-name">
+                        {{ item.menu_item.name }}
+                        {% if item.menu_item.size %}
+                        <span style="font-size: 0.75rem; color: var(--warm-gray-light); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">({{ item.menu_item.get_size_display }})</span>
+                        {% endif %}
+                    </div>
+                    <div class="checkout-item-toppings">
+                        {% for topping in item.toppings.all %}{{ topping.name }}{% if not forloop.last %}, {% endif %}{% empty %}{% endfor %}
+                    </div>
+                </div>
+                <div class="checkout-item-right">
+                    {{ item.quantity }} &times; ${{ item.menu_item.price }} = ${{ item.subtotal }}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="checkout-total">
+                <span class="checkout-total-label">Total</span>
+                <span class="checkout-total-amount">${{ cart.total }}</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="notes">Order Notes (optional)</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any special instructions..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-brand btn-brand-lg btn-block">Place Order &mdash; ${{ cart.total }}</button>
+    </form>
+    <div class="text-center mt-3">
+        <a href="{% url 'cart' %}" class="auth-links" style="font-size: 0.9rem;">Back to Cart</a>
+    </div>
+</div>
+{% endblock %}
