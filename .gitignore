@@ -91,3 +91,4 @@ lint/tmp/
 venv
 
 .dccache
+/staticfiles

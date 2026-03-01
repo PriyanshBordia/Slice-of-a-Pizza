@@ -1,0 +1,55 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Cart - Slice of a Pizza{% endblock %}
+
+{% block body %}
+<h2 class="page-title">Your Cart</h2>
+
+{% if items %}
+<div class="cart-items">
+    {% for item in items %}
+    <div class="cart-item-card">
+        <div class="cart-item-info">
+            <div class="cart-item-name">
+                {{ item.menu_item.name }}
+                {% if item.menu_item.size %}
+                <span class="cart-item-size">{{ item.menu_item.get_size_display }}</span>
+                {% endif %}
+            </div>
+            <div class="cart-item-toppings">
+                {% for topping in item.toppings.all %}{{ topping.name }}{% if not forloop.last %}, {% endif %}{% empty %}No toppings{% endfor %}
+            </div>
+        </div>
+        <div class="cart-item-actions">
+            <form method="POST" action="{% url 'cart_update' item.id %}" class="d-flex align-items-center" style="gap: 0.25rem;">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="20" class="cart-quantity-input">
+                <button type="submit" class="cart-update-btn">Update</button>
+            </form>
+            <form method="POST" action="{% url 'cart_remove' item.id %}">
+                {% csrf_token %}
+                <button type="submit" class="cart-remove-btn">Remove</button>
+            </form>
+        </div>
+        <div class="cart-item-price">${{ item.subtotal }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="cart-total">
+    <span class="cart-total-label">Total</span>
+    <span class="cart-total-amount">${{ cart.total }}</span>
+</div>
+
+<div class="cart-actions">
+    <a href="{% url 'menu' %}" class="btn btn-brand-outline">Continue Shopping</a>
+    <a href="{% url 'checkout' %}" class="btn btn-brand btn-brand-lg">Proceed to Checkout</a>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <p>Your cart is empty.</p>
+    <a href="{% url 'menu' %}" class="btn btn-brand">Browse Menu</a>
+</div>
+{% endif %}
+{% endblock %}
