@@ -1,68 +1,186 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
+        <script>
+            if (localStorage.getItem('theme') === 'dark' ||
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        </script>
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            terracotta: { DEFAULT: '#C65D3E', dark: '#A34A30', light: '#E8845F' },
+                            cream: { DEFAULT: '#FDF6EC', dark: '#E8DDD0', warm: '#FAF0E1' },
+                            olive: { DEFAULT: '#5C7A4B', dark: '#4A6239', light: '#7A9E66' },
+                            sienna: { DEFAULT: '#A0522D', light: '#D4A87C' },
+                            charcoal: { DEFAULT: '#2C2825', light: '#4A4541' },
+                            parchment: '#FBF7F0',
+                        },
+                        fontFamily: {
+                            display: ['"Playfair Display"', 'Georgia', 'serif'],
+                            body: ['Inter', 'system-ui', 'sans-serif'],
+                        },
+                        borderRadius: {
+                            'artisan': '12px',
+                        },
+                        boxShadow: {
+                            'warm': '0 4px 16px rgba(44, 40, 37, 0.08)',
+                            'warm-lg': '0 8px 30px rgba(44, 40, 37, 0.12)',
+                        },
+                    }
+                }
+            }
+        </script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
 
         {% load static %}
-        <link href="{% static 'orders/styles/css/style.css' %}" rel="stylesheet">
+        <link href="{% static 'orders/css/artisan.css' %}" rel="stylesheet">
         <link href="{% static 'orders/icons/icons8-pizza-48.png' %}" rel="icon">
 
         {% block head %}{% endblock %}
 
-        <title>{% block title %}Slice of a Pizza{% endblock %}</title>
+        <title>{% block title %}Seed &amp; Sprout{% endblock %}</title>
     </head>
-    <body class="{% block body_class %}{% endblock %}">
-        <nav class="navbar navbar-expand-lg navbar-premium">
-            <a class="navbar-brand" href="{% url 'index' %}">Slice of a Pizza</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav ml-auto align-items-lg-center">
+    <body class="bg-parchment font-body text-charcoal-light min-h-screen flex flex-col {% block body_class %}{% endblock %}"
+          x-data="{ mobileMenuOpen: false }"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+        <nav class="bg-charcoal px-4 sm:px-6 py-3">
+            <div class="max-w-5xl mx-auto flex items-center justify-between">
+                <a href="{% url 'index' %}" class="font-display text-xl text-cream tracking-wider hover:text-terracotta-light transition-colors">
+                    Seed &amp; Sprout
+                </a>
+
+                <div class="flex items-center gap-3">
+                    <button @click="$store.theme.toggle()"
+                            class="text-cream/70 hover:text-cream transition-colors"
+                            :title="$store.theme.dark ? 'Switch to light mode' : 'Switch to dark mode'">
+                        <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen"
+                            class="lg:hidden text-cream/70 hover:text-cream transition-colors">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg x-show="mobileMenuOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    </button>
+                </div>
+
+                <div :class="mobileMenuOpen ? 'flex' : 'hidden lg:flex'"
+                     class="absolute lg:relative top-14 lg:top-0 left-0 right-0 lg:left-auto lg:right-auto
+                            flex-col lg:flex-row items-center gap-1 lg:gap-6
+                            bg-charcoal lg:bg-transparent px-4 py-3 lg:p-0
+                            border-t border-white/10 lg:border-0 z-50">
                     {% if user.is_authenticated %}
-                        <a class="nav-link" href="{% url 'menu' %}">Menu</a>
-                        <a class="nav-link" href="{% url 'cart' %}">
-                            Cart{% if cart_count %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+                        <a href="{% url 'menu' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors">Menu</a>
+                        <a href="{% url 'cart' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors relative">
+                            Cart
+                            <span id="cart-badge">{% if cart_count %}<span id="cart-badge-count" class="ml-1 inline-flex items-center justify-center w-5 h-5 text-[0.65rem] font-bold bg-terracotta text-white rounded-full">{{ cart_count }}</span>{% endif %}</span>
                         </a>
-                        <a class="nav-link" href="{% url 'order_history' %}">Orders</a>
-                        <span class="nav-greeting">Hi, {{ user.first_name|default:user.username }}</span>
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a href="{% url 'order_history' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors">Orders</a>
+                        <span class="hidden lg:inline text-cream/40">|</span>
+                        <span class="text-sm text-sienna-light font-medium">Hi, {{ user.first_name|default:user.username }}</span>
+                        <a href="{% url 'logout' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors">Logout</a>
                     {% else %}
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        <a href="{% url 'login' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors">Login</a>
+                        <a href="{% url 'register' %}" class="w-full lg:w-auto text-center py-2 lg:py-0 text-sm uppercase tracking-widest text-cream/70 hover:text-cream transition-colors">Register</a>
                     {% endif %}
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow-1">
-            <div class="container mt-4" style="max-width: 1100px;">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert-toast alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+        <!-- Toast notifications -->
+        <div x-data="toastManager()" @notify.window="addToast($event.detail)"
+             class="fixed top-4 right-4 z-[100] flex flex-col gap-2 max-w-sm pointer-events-none">
+            <template x-for="toast in toasts" :key="toast.id">
+                <div x-show="toast.visible"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-x-4"
+                     x-transition:enter-end="opacity-100 translate-x-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="pointer-events-auto bg-white rounded-artisan shadow-warm-lg border-l-4 px-4 py-3 text-sm flex items-center gap-2"
+                     :class="toast.type === 'success' ? 'border-olive' : toast.type === 'error' ? 'border-red-500' : 'border-sienna'">
+                    <span x-text="toast.message" class="flex-1"></span>
+                    <button @click="removeToast(toast.id)" class="text-charcoal-light/40 hover:text-charcoal transition shrink-0">&times;</button>
+                </div>
+            </template>
+        </div>
 
-                <div class="page-content">
+        <main class="flex-grow">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+                <div class="animate-fade-in-up">
                     {% block body %}{% endblock %}
                 </div>
             </div>
         </main>
 
-        <footer>
-            &copy; 2026, Slice of a Pizza
+        <footer class="mt-auto border-t border-cream-dark py-6 text-center">
+            <div class="artisan-divider-sm mx-auto mb-4 w-16"></div>
+            <p class="text-xs text-charcoal-light/50">&copy; 2026, Seed &amp; Sprout</p>
         </footer>
+
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('theme', {
+                    dark: document.documentElement.classList.contains('dark'),
+                    toggle() {
+                        this.dark = !this.dark;
+                        document.documentElement.classList.toggle('dark', this.dark);
+                        localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+                    }
+                });
+
+                Alpine.data('toastManager', () => ({
+                    toasts: [],
+                    addToast(detail) {
+                        const id = Date.now() + Math.random();
+                        this.toasts.push({ id, message: detail.message, type: detail.type || 'success', visible: true });
+                        setTimeout(() => this.removeToast(id), 4000);
+                    },
+                    removeToast(id) {
+                        const toast = this.toasts.find(t => t.id === id);
+                        if (toast) toast.visible = false;
+                        setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 300);
+                    }
+                }));
+            });
+        </script>
+
+        {% if messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                {% for message in messages %}
+                window.dispatchEvent(new CustomEvent('notify', {
+                    detail: { message: '{{ message|escapejs }}', type: '{{ message.tags }}' }
+                }));
+                {% endfor %}
+            });
+        </script>
+        {% endif %}
+
+        <style>[x-cloak] { display: none !important; }</style>
     </body>
 </html>

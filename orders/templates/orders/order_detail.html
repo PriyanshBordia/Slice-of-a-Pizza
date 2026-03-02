@@ -1,119 +1,150 @@
 {% extends "orders/base.html" %}
 
-{% block title %}Order #{{ order.id }} - Slice of a Pizza{% endblock %}
+{% block title %}Order #{{ order.id }} - Seed &amp; Sprout{% endblock %}
 
 {% block body %}
-<div class="order-detail-wrapper">
-    <h2 class="page-title">Order #{{ order.id }}</h2>
-    <p style="color: var(--warm-gray-light); margin-top: -0.75rem; margin-bottom: 1rem; font-size: 0.9rem;">
+{% if just_placed %}
+<div id="confetti-container" class="confetti-container"></div>
+<script>
+(function() {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#C65D3E', '#5C7A4B', '#A0522D', '#D4A87C', '#E8845F', '#7A9E66', '#FEF3C7', '#DBEAFE'];
+    const shapes = ['circle', 'square', 'triangle'];
+    const count = 80;
+
+    for (let i = 0; i < count; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = 6 + Math.random() * 10;
+        const x = Math.random() * 100;
+        const duration = 2 + Math.random() * 2;
+        const delay = Math.random() * 0.8;
+        const rotation = 360 + Math.random() * 720;
+
+        piece.style.left = x + '%';
+        piece.style.width = size + 'px';
+        piece.style.height = size + 'px';
+        piece.style.setProperty('--fall-duration', duration + 's');
+        piece.style.setProperty('--fall-delay', delay + 's');
+        piece.style.setProperty('--rotation', rotation + 'deg');
+
+        if (shape === 'circle') {
+            piece.style.borderRadius = '50%';
+            piece.style.backgroundColor = color;
+        } else if (shape === 'square') {
+            piece.style.backgroundColor = color;
+            piece.style.borderRadius = '2px';
+        } else {
+            piece.style.width = '0';
+            piece.style.height = '0';
+            piece.style.borderLeft = (size/2) + 'px solid transparent';
+            piece.style.borderRight = (size/2) + 'px solid transparent';
+            piece.style.borderBottom = size + 'px solid ' + color;
+            piece.style.backgroundColor = 'transparent';
+        }
+
+        container.appendChild(piece);
+    }
+
+    setTimeout(function() { container.remove(); }, 5000);
+})();
+</script>
+{% endif %}
+
+<div class="max-w-2xl mx-auto">
+    {% if just_placed %}
+    <div class="text-center mb-6 animate-fade-in-up">
+        <span class="text-4xl">🌱</span>
+        <h2 class="font-display text-3xl font-bold text-olive mt-2">Order Placed!</h2>
+        <p class="text-charcoal-light/60 text-sm mt-1">Your plant-powered meal is on its way</p>
+    </div>
+    {% endif %}
+    <h2 class="font-display text-3xl font-bold text-charcoal mb-0">Order #{{ order.id }}</h2>
+    <p class="text-sm text-charcoal-light/50 mb-6">
         Placed on {{ order.created_at|date:"F j, Y g:i A" }}
     </p>
 
     {% if order.status != 'cancelled' %}
-    <div class="order-progress">
-        {% with statuses="placed,preparing,ready,completed" %}
-        {% with current=order.status %}
-        {% for step in "0123" %}
-            {% if forloop.counter0 == 0 %}
-                {% with label="Placed" slug="placed" %}
-                <div class="progress-step {% if current == slug or current == 'preparing' or current == 'ready' or current == 'completed' %}active{% endif %}">
-                    <div class="progress-dot {% if current == 'preparing' or current == 'ready' or current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
-                        <span class="progress-dot-inner"></span>
+    <div x-data="{
+        steps: ['placed', 'preparing', 'ready', 'completed'],
+        labels: ['Placed', 'Preparing', 'Ready', 'Completed'],
+        current: '{{ order.status }}',
+        idx(step) { return this.steps.indexOf(step); },
+        isActive(step) { return this.idx(step) <= this.idx(this.current); },
+        isCurrent(step) { return step === this.current; },
+        isCompleted(step) { return this.idx(step) < this.idx(this.current); },
+        lineActive(i) { return this.idx(this.current) > i; }
+    }" class="flex items-center justify-center my-8">
+        <template x-for="(step, index) in steps" :key="step">
+            <div class="flex items-center">
+                <div class="flex flex-col items-center">
+                    <div class="progress-dot"
+                         :class="{
+                             'completed': isCompleted(step),
+                             'current': isCurrent(step)
+                         }">
+                        <svg x-show="isCompleted(step)" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span x-show="isCurrent(step)" class="w-2 h-2 rounded-full bg-terracotta"></span>
                     </div>
-                    <span class="progress-label">{{ label }}</span>
+                    <span class="text-[0.6rem] font-semibold uppercase tracking-wider mt-2"
+                          :class="isActive(step) ? 'text-charcoal' : 'text-charcoal-light/40'"
+                          x-text="labels[index]"></span>
                 </div>
-                {% if current == 'preparing' or current == 'ready' or current == 'completed' %}
-                <div class="progress-line filled"></div>
-                {% else %}
-                <div class="progress-line"></div>
-                {% endif %}
-                {% endwith %}
-            {% endif %}
-            {% if forloop.counter0 == 1 %}
-                {% with label="Preparing" slug="preparing" %}
-                <div class="progress-step {% if current == slug or current == 'ready' or current == 'completed' %}active{% endif %}">
-                    <div class="progress-dot {% if current == 'ready' or current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
-                        <span class="progress-dot-inner"></span>
-                    </div>
-                    <span class="progress-label">{{ label }}</span>
-                </div>
-                {% if current == 'ready' or current == 'completed' %}
-                <div class="progress-line filled"></div>
-                {% else %}
-                <div class="progress-line"></div>
-                {% endif %}
-                {% endwith %}
-            {% endif %}
-            {% if forloop.counter0 == 2 %}
-                {% with label="Ready" slug="ready" %}
-                <div class="progress-step {% if current == slug or current == 'completed' %}active{% endif %}">
-                    <div class="progress-dot {% if current == 'completed' %}completed{% elif current == slug %}current{% endif %}">
-                        <span class="progress-dot-inner"></span>
-                    </div>
-                    <span class="progress-label">{{ label }}</span>
-                </div>
-                {% if current == 'completed' %}
-                <div class="progress-line filled"></div>
-                {% else %}
-                <div class="progress-line"></div>
-                {% endif %}
-                {% endwith %}
-            {% endif %}
-            {% if forloop.counter0 == 3 %}
-                {% with label="Completed" slug="completed" %}
-                <div class="progress-step {% if current == slug %}active{% endif %}">
-                    <div class="progress-dot {% if current == slug %}completed{% endif %}">
-                        <span class="progress-dot-inner"></span>
-                    </div>
-                    <span class="progress-label">{{ label }}</span>
-                </div>
-                {% endwith %}
-            {% endif %}
-        {% endfor %}
-        {% endwith %}
-        {% endwith %}
+                <div x-show="index < steps.length - 1"
+                     class="progress-line"
+                     :class="lineActive(index) ? 'filled' : ''"></div>
+            </div>
+        </template>
     </div>
     {% else %}
-    <div class="order-progress">
-        <div class="progress-step active">
+    <div class="flex justify-center my-8">
+        <div class="flex flex-col items-center">
             <div class="progress-dot cancelled">
-                <span class="progress-dot-inner"></span>
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
             </div>
-            <span class="progress-label">Cancelled</span>
+            <span class="text-[0.6rem] font-semibold uppercase tracking-wider mt-2 text-red-600">Cancelled</span>
         </div>
     </div>
     {% endif %}
 
     {% if order.notes %}
-    <p style="margin-bottom: 1.5rem;"><strong>Notes:</strong> {{ order.notes }}</p>
+    <div class="bg-cream rounded-artisan px-4 py-3 mb-4 text-sm">
+        <span class="font-semibold text-charcoal">Notes:</span>
+        <span class="text-charcoal-light">{{ order.notes }}</span>
+    </div>
     {% endif %}
 
-    <div class="card-warm mb-4">
-        <div class="card-body">
-            {% for item in order.items.all %}
-            <div class="order-item-row">
-                <div>
-                    <div class="order-item-name">{{ item.item_name }}</div>
-                    {% if item.toppings_snapshot %}
-                    <div class="order-item-toppings">{{ item.toppings_snapshot }}</div>
-                    {% endif %}
-                </div>
-                <div class="order-item-right">
-                    {{ item.quantity }} &times; ${{ item.item_price }} = ${{ item.subtotal }}
-                </div>
+    <div class="bg-white rounded-artisan shadow-warm p-6 mb-6">
+        {% for item in order.items.all %}
+        <div class="checkout-item flex items-start justify-between py-3">
+            <div class="flex-1 min-w-0">
+                <span class="font-display font-semibold text-charcoal">{{ item.item_name }}</span>
+                {% if item.toppings_snapshot %}
+                <p class="text-xs text-charcoal-light/60 mt-0.5">{{ item.toppings_snapshot }}</p>
+                {% endif %}
             </div>
-            {% endfor %}
+            <div class="text-right shrink-0 ml-4">
+                <span class="text-sm text-charcoal-light">{{ item.quantity }} &times; ${{ item.item_price }}</span>
+                <span class="text-sm font-semibold text-charcoal ml-1">= ${{ item.subtotal }}</span>
+            </div>
+        </div>
+        {% endfor %}
 
-            <div class="checkout-total">
-                <span class="checkout-total-label">Total</span>
-                <span class="checkout-total-amount">${{ order.total }}</span>
-            </div>
+        <div class="flex items-center justify-between border-t border-cream-dark pt-4 mt-2">
+            <span class="font-display text-lg text-charcoal">Total</span>
+            <span class="font-display text-2xl font-bold text-charcoal">${{ order.total }}</span>
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="{% url 'order_history' %}" class="view-link">&larr; All Orders</a>
-        <a href="{% url 'menu' %}" class="btn btn-brand">Order Again</a>
+    <div class="flex justify-between items-center">
+        <a href="{% url 'order_history' %}" class="text-sm text-terracotta hover:text-terracotta-dark font-medium transition-colors">&larr; All Orders</a>
+        <a href="{% url 'menu' %}" class="bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-2.5 rounded-artisan transition-all hover:-translate-y-0.5">Order Again</a>
     </div>
 </div>
 {% endblock %}

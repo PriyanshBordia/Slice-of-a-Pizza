@@ -1,49 +1,63 @@
 {% extends "orders/base.html" %}
 
-{% block title %}Checkout - Slice of a Pizza{% endblock %}
+{% block title %}Checkout - Seed &amp; Sprout{% endblock %}
 
 {% block body %}
-<div class="checkout-wrapper">
-    <h2 class="page-title">Checkout</h2>
+<div class="max-w-2xl mx-auto">
+    <h2 class="font-display text-3xl font-bold text-charcoal mb-1">Checkout</h2>
+    <div class="artisan-divider w-16 mb-6"></div>
 
-    <div class="card-warm mb-4">
-        <div class="card-body">
-            {% for item in items %}
-            <div class="checkout-item">
-                <div>
-                    <div class="checkout-item-name">
-                        {{ item.menu_item.name }}
-                        {% if item.menu_item.size %}
-                        <span style="font-size: 0.75rem; color: var(--warm-gray-light); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">({{ item.menu_item.get_size_display }})</span>
-                        {% endif %}
-                    </div>
-                    <div class="checkout-item-toppings">
-                        {% for topping in item.toppings.all %}{{ topping.name }}{% if not forloop.last %}, {% endif %}{% empty %}{% endfor %}
-                    </div>
+    <div class="bg-white rounded-artisan shadow-warm p-6 mb-6">
+        {% for item in items %}
+        <div class="checkout-item flex items-start justify-between py-3">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-baseline gap-1.5">
+                    <span class="font-display font-semibold text-charcoal">{{ item.menu_item.name }}</span>
+                    {% if item.menu_item.size %}
+                    <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-charcoal-light/50">({{ item.menu_item.get_size_display }})</span>
+                    {% endif %}
                 </div>
-                <div class="checkout-item-right">
-                    {{ item.quantity }} &times; ${{ item.menu_item.price }} = ${{ item.subtotal }}
-                </div>
+                {% if item.toppings.all %}
+                <p class="text-xs text-charcoal-light/60 mt-0.5">
+                    {% for topping in item.toppings.all %}{{ topping.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </p>
+                {% endif %}
             </div>
-            {% endfor %}
+            <div class="text-right shrink-0 ml-4">
+                <span class="text-sm text-charcoal-light">{{ item.quantity }} &times; ${{ item.menu_item.price }}</span>
+                <span class="text-sm font-semibold text-charcoal ml-1">= ${{ item.subtotal }}</span>
+            </div>
+        </div>
+        {% endfor %}
 
-            <div class="checkout-total">
-                <span class="checkout-total-label">Total</span>
-                <span class="checkout-total-amount">${{ cart.total }}</span>
-            </div>
+        <div class="flex items-center justify-between border-t border-cream-dark pt-4 mt-2">
+            <span class="font-display text-lg text-charcoal">Total</span>
+            <span class="font-display text-2xl font-bold text-charcoal">${{ cart.total }}</span>
         </div>
     </div>
 
-    <form method="POST" action="{% url 'checkout' %}">
+    <form method="POST" action="{% url 'checkout' %}"
+          hx-post="{% url 'checkout' %}"
+          x-data="{ submitting: false }"
+          @htmx:before-request="submitting = true"
+          @htmx:after-request="submitting = false">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="notes">Order Notes (optional)</label>
-            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any special instructions..."></textarea>
+        <div class="mb-5">
+            <label for="notes" class="block text-sm font-medium text-charcoal-light mb-1">Order Notes (optional)</label>
+            <textarea class="w-full px-4 py-3 border border-cream-dark rounded-artisan text-charcoal bg-parchment focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 transition"
+                      id="notes" name="notes" rows="3"
+                      placeholder="No nuts, extra avocado, gluten-free wrap..."></textarea>
         </div>
-        <button type="submit" class="btn btn-brand btn-brand-lg btn-block">Place Order &mdash; ${{ cart.total }}</button>
+        <button type="submit"
+                class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-display font-semibold text-lg py-3 rounded-artisan transition-all hover:-translate-y-0.5 hover:shadow-warm"
+                :disabled="submitting"
+                :class="submitting && 'opacity-60 cursor-wait'">
+            <span x-show="!submitting">Place Order &mdash; ${{ cart.total }}</span>
+            <span x-show="submitting" x-cloak>Placing your order...</span>
+        </button>
     </form>
-    <div class="text-center mt-3">
-        <a href="{% url 'cart' %}" class="auth-links" style="font-size: 0.9rem;">Back to Cart</a>
+    <div class="text-center mt-4">
+        <a href="{% url 'cart' %}" class="text-sm text-charcoal-light/50 hover:text-charcoal-light transition-colors">Back to Cart</a>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,407 @@
+/* ============================================
+   Artisan CSS — Seed & Sprout
+   Custom styles for the warm & artisanal theme
+   ============================================ */
+
+/* --- Base --- */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Paper texture overlay --- */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+}
+
+/* --- Hand-drawn divider --- */
+.artisan-divider {
+    height: 4px;
+    background-image: url("data:image/svg+xml,%3Csvg width='120' height='4' viewBox='0 0 120 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 2C10 0.5 20 3.5 30 2C40 0.5 50 3.5 60 2C70 0.5 80 3.5 90 2C100 0.5 110 3.5 120 2' stroke='%23C65D3E' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 120px 4px;
+    background-position: center;
+}
+
+.artisan-divider-sm {
+    height: 3px;
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='3' viewBox='0 0 80 3' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1.5C10 0.5 20 2.5 30 1.5C40 0.5 50 2.5 60 1.5C70 0.5 75 2.5 80 1.5' stroke='%23D4A87C' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 80px 3px;
+    background-position: center;
+}
+
+/* --- Auth divider (or continue with) --- */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    color: #9B9590;
+    font-size: 0.8rem;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #E8DDD0, transparent);
+}
+
+/* --- Status pills --- */
+.status-placed    { background-color: #DBEAFE; color: #1E40AF; }
+.status-preparing { background-color: #FEF3C7; color: #92400E; }
+.status-ready     { background-color: #D1FAE5; color: #065F46; }
+.status-completed { background-color: #F3F4F6; color: #4B5563; }
+.status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+
+/* --- Progress indicator --- */
+.progress-dot {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #E8DDD0;
+    background: #FDF6EC;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.completed {
+    background: #5C7A4B;
+    border-color: #5C7A4B;
+}
+
+.progress-dot.current {
+    border-color: #C65D3E;
+    background: #FDF6EC;
+    box-shadow: 0 0 0 4px rgba(198, 93, 62, 0.15);
+}
+
+.progress-dot.cancelled {
+    background: #EF4444;
+    border-color: #EF4444;
+}
+
+.progress-line {
+    width: 3rem;
+    height: 2px;
+    background: #E8DDD0;
+    border-radius: 1px;
+    margin: 0 0.25rem;
+    margin-bottom: 1.5rem;
+    transition: background 0.3s ease;
+}
+
+.progress-line.filled {
+    background: #5C7A4B;
+}
+
+@media (min-width: 768px) {
+    .progress-line {
+        width: 4rem;
+    }
+}
+
+/* --- HTMX loading states --- */
+.htmx-request {
+    opacity: 0.6;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+}
+
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline;
+}
+
+.htmx-request .htmx-hide-on-request {
+    display: none;
+}
+
+/* --- Page animations --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* --- Scrollbar hide utility --- */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Menu card hover --- */
+.menu-card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.menu-card-hover:hover {
+    transform: translateY(-4px) rotate(-0.3deg);
+    box-shadow: 0 12px 36px rgba(44, 40, 37, 0.12);
+}
+
+/* --- Category header accent --- */
+.category-accent::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin-top: 0.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='3' viewBox='0 0 60 3' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1.5C8 0.5 16 2.5 24 1.5C32 0.5 40 2.5 48 1.5C52 1 56 2.5 60 1.5' stroke='%23C65D3E' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+}
+
+/* --- Toast animation --- */
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast-enter {
+    animation: toastSlideIn 0.3s ease-out;
+}
+
+/* --- Checkout item separator --- */
+.checkout-item + .checkout-item {
+    border-top: 1px solid #F0E8DE;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+/* --- Focus ring for inputs --- */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* ============================================
+   Dark mode
+   ============================================ */
+html.dark body {
+    background-color: #1C1917;
+    color: #D6D3D1;
+}
+
+html.dark body::before {
+    opacity: 0.04;
+}
+
+/* Cards and containers */
+html.dark .bg-white {
+    background-color: #292524 !important;
+}
+
+html.dark .bg-parchment,
+html.dark .bg-cream {
+    background-color: #1C1917 !important;
+}
+
+/* Navbar stays dark in both modes — no change needed */
+
+/* Text colors */
+html.dark .text-charcoal {
+    color: #F5F5F4 !important;
+}
+
+html.dark .text-charcoal-light {
+    color: #D6D3D1 !important;
+}
+
+/* Borders */
+html.dark .border-cream-dark {
+    border-color: #44403C !important;
+}
+
+html.dark .border-t {
+    border-color: #44403C !important;
+}
+
+/* Inputs */
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: #1C1917 !important;
+    border-color: #44403C !important;
+    color: #F5F5F4 !important;
+}
+
+/* Toasts */
+html.dark .pointer-events-auto.bg-white {
+    background-color: #292524 !important;
+}
+
+/* Progress indicator */
+html.dark .progress-dot {
+    background: #292524;
+    border-color: #44403C;
+}
+
+html.dark .progress-dot.current {
+    background: #292524;
+}
+
+html.dark .progress-line {
+    background: #44403C;
+}
+
+/* Checkout item separator */
+html.dark .checkout-item + .checkout-item {
+    border-color: #44403C;
+}
+
+/* Auth divider */
+html.dark .auth-divider::before,
+html.dark .auth-divider::after {
+    background: linear-gradient(to right, transparent, #44403C, transparent);
+}
+
+/* Sticky category nav */
+html.dark nav.sticky {
+    background-color: rgba(28, 25, 23, 0.95) !important;
+    border-color: #44403C !important;
+}
+
+/* Category pill hover in dark */
+html.dark nav.sticky a {
+    border-color: #44403C;
+}
+
+/* Menu card hover shadow in dark */
+html.dark .menu-card-hover:hover {
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+}
+
+/* Shadows in dark */
+html.dark .shadow-warm {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+html.dark .shadow-warm-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Footer */
+html.dark footer {
+    border-color: #44403C;
+}
+
+/* Smooth transition for theme switch */
+html.dark body,
+html.dark .bg-white,
+html.dark .bg-parchment,
+html.dark .bg-cream,
+html.dark input,
+html.dark textarea {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ============================================
+   Party popper / confetti animation
+   ============================================ */
+.confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: confettiFall var(--fall-duration, 3s) ease-in forwards;
+    animation-delay: var(--fall-delay, 0s);
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(var(--rotation, 720deg)) scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes confettiBurst {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 0;
+    }
+}
+
+/* --- Print styles --- */
+@media print {
+    body::before {
+        display: none;
+    }
+    nav, footer, .toast-container, button[type="submit"] {
+        display: none !important;
+    }
+}
