@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -82,14 +83,9 @@ def menu_view(request):
 
     toppings = Topping.objects.all().order_by('name')
 
-    cart_count = 0
-    if hasattr(request.user, 'cart'):
-        cart_count = request.user.cart.item_count
-
     return render(request, 'orders/menu.html', {
         'menu_data': menu_data,
         'toppings': toppings,
-        'cart_count': cart_count,
     })
 
 
@@ -107,6 +103,11 @@ def cart_add(request, item_id):
         selected_toppings = Topping.objects.filter(id__in=topping_ids)[:menu_item.toppings_allowed]
         cart_item.toppings.set(selected_toppings)
 
+    if request.headers.get('HX-Request'):
+        return render(request, 'orders/partials/_cart_badge.html', {
+            'cart_count': cart.item_count,
+        })
+
     messages.success(request, f'Added {menu_item.name} to cart.')
     return redirect('menu')
 
@@ -117,6 +118,16 @@ def cart_remove(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     name = cart_item.menu_item.name
     cart_item.delete()
+
+    if request.headers.get('HX-Request'):
+        cart = request.user.cart
+        items = cart.items.select_related('menu_item').prefetch_related('toppings').all()
+        response = render(request, 'orders/partials/_cart_items.html', {
+            'cart': cart, 'items': items,
+        })
+        response['HX-Trigger'] = 'cartUpdated'
+        return response
+
     messages.success(request, f'Removed {name} from cart.')
     return redirect('cart')
 
@@ -128,11 +139,20 @@ def cart_update(request, item_id):
     quantity = int(request.POST.get('quantity', 1))
     if quantity < 1:
         cart_item.delete()
-        messages.success(request, f'Removed {cart_item.menu_item.name} from cart.')
     else:
         cart_item.quantity = quantity
         cart_item.save()
-        messages.success(request, 'Cart updated.')
+
+    if request.headers.get('HX-Request'):
+        cart = request.user.cart
+        items = cart.items.select_related('menu_item').prefetch_related('toppings').all()
+        response = render(request, 'orders/partials/_cart_items.html', {
+            'cart': cart, 'items': items,
+        })
+        response['HX-Trigger'] = 'cartUpdated'
+        return response
+
+    messages.success(request, 'Cart updated.')
     return redirect('cart')
 
 
@@ -182,14 +202,23 @@ def checkout_view(request):
     # Clear cart
     cart.items.all().delete()
 
+    if request.headers.get('HX-Request'):
+        response = HttpResponse(status=204)
+        response['HX-Redirect'] = f'/order/{order.id}/?placed=1'
+        return response
+
     messages.success(request, f'Order #{order.id} placed successfully!')
-    return redirect('order_detail', order_id=order.id)
+    return redirect(f'/order/{order.id}/?placed=1')
 
 
 @login_required(login_url='login')
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'orders/order_detail.html', {'order': order})
+    just_placed = request.GET.get('placed') == '1'
+    return render(request, 'orders/order_detail.html', {
+        'order': order,
+        'just_placed': just_placed,
+    })
 
 
 @login_required(login_url='login')

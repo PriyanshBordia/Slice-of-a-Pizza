@@ -1,0 +1,89 @@
+{% if items %}
+<div class="space-y-3 mb-6">
+    {% for item in items %}
+    <div class="bg-white rounded-artisan shadow-warm p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2">
+                <h4 class="font-display text-base font-semibold text-charcoal truncate">{{ item.menu_item.name }}</h4>
+                {% if item.menu_item.size %}
+                <span class="text-[0.65rem] font-semibold uppercase tracking-wider text-charcoal-light/50 shrink-0">{{ item.menu_item.get_size_display }}</span>
+                {% endif %}
+            </div>
+            <p class="text-xs text-charcoal-light/60 mt-0.5">
+                {% for topping in item.toppings.all %}{{ topping.name }}{% if not forloop.last %}, {% endif %}{% empty %}No toppings{% endfor %}
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+            <form method="POST" action="{% url 'cart_update' item.id %}"
+                  hx-post="{% url 'cart_update' item.id %}"
+                  hx-target="#cart-content"
+                  hx-swap="innerHTML"
+                  class="flex items-center gap-1"
+                  x-data="{ qty: {{ item.quantity }} }">
+                {% csrf_token %}
+                <button type="button" @click="qty = Math.max(1, qty - 1)"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-cream text-charcoal-light hover:bg-terracotta hover:text-white transition text-sm font-bold">
+                    &minus;
+                </button>
+                <input type="number" name="quantity" x-model="qty"
+                       min="1" max="20"
+                       class="w-10 text-center text-sm border border-cream-dark rounded-lg py-1 bg-parchment text-charcoal">
+                <button type="button" @click="qty = Math.min(20, qty + 1)"
+                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-cream text-charcoal-light hover:bg-terracotta hover:text-white transition text-sm font-bold">
+                    +
+                </button>
+                <button type="submit" class="text-[0.65rem] font-semibold uppercase tracking-wider text-charcoal-light/50 hover:text-terracotta transition ml-1">
+                    Update
+                </button>
+            </form>
+
+            <div x-data="{ showConfirm: false }" class="relative">
+                <button @click="showConfirm = true"
+                        class="text-[0.65rem] font-semibold uppercase tracking-wider text-charcoal-light/40 hover:text-red-500 transition">
+                    Remove
+                </button>
+                <div x-show="showConfirm" x-transition x-cloak
+                     class="fixed inset-0 bg-charcoal/40 z-50 flex items-center justify-center"
+                     @click.self="showConfirm = false">
+                    <div class="bg-white rounded-artisan p-6 shadow-warm-lg max-w-xs mx-4 text-center" @click.stop>
+                        <p class="font-display text-lg text-charcoal mb-1">Remove item?</p>
+                        <p class="text-sm text-charcoal-light/60 mb-4">{{ item.menu_item.name }}</p>
+                        <div class="flex gap-3 justify-center">
+                            <button @click="showConfirm = false" class="px-4 py-2 text-sm font-medium text-charcoal-light border border-cream-dark rounded-artisan hover:bg-cream transition">Cancel</button>
+                            <form method="POST" action="{% url 'cart_remove' item.id %}"
+                                  hx-post="{% url 'cart_remove' item.id %}"
+                                  hx-target="#cart-content"
+                                  hx-swap="innerHTML">
+                                {% csrf_token %}
+                                <button type="submit" class="px-4 py-2 text-sm font-medium bg-terracotta text-white rounded-artisan hover:bg-terracotta-dark transition">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-right shrink-0">
+            <span class="font-display text-lg font-bold text-olive">${{ item.subtotal }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="flex items-center justify-between bg-white rounded-artisan shadow-warm px-6 py-4 mb-6">
+    <span class="font-display text-lg text-charcoal">Total</span>
+    <span class="font-display text-2xl font-bold text-charcoal">${{ cart.total }}</span>
+</div>
+
+<div class="flex flex-col sm:flex-row gap-3 justify-between">
+    <a href="{% url 'menu' %}" class="text-center px-6 py-2.5 text-sm font-semibold text-charcoal-light border border-cream-dark rounded-artisan hover:bg-cream hover:border-charcoal-light/30 transition-all">Continue Shopping</a>
+    <a href="{% url 'checkout' %}" class="text-center bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-8 py-2.5 rounded-artisan transition-all hover:-translate-y-0.5 hover:shadow-warm">Proceed to Checkout</a>
+</div>
+
+{% else %}
+<div class="text-center py-12">
+    <p class="text-charcoal-light/50 text-lg mb-4 font-display">Your cart is empty.</p>
+    <a href="{% url 'menu' %}" class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-2.5 rounded-artisan transition-all hover:-translate-y-0.5">Browse Menu</a>
+</div>
+{% endif %}
