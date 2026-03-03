@@ -18,12 +18,12 @@ class Topping(models.Model):
 
 class MenuItem(models.Model):
     CATEGORY_CHOICES = [
-        ('regular_pizza', 'Regular Pizza'),
-        ('sicilian_pizza', 'Sicilian Pizza'),
-        ('sub', 'Sub'),
+        ('bowl', 'Bowl'),
+        ('wrap', 'Wrap'),
         ('salad', 'Salad'),
-        ('pasta', 'Pasta'),
-        ('dinner_platter', 'Dinner Platter'),
+        ('smoothie', 'Smoothie'),
+        ('side', 'Side'),
+        ('dessert', 'Dessert'),
     ]
     SIZE_CHOICES = [
         ('S', 'Small'),

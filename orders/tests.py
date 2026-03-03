@@ -9,8 +9,8 @@ from .models import Topping, MenuItem, Cart, CartItem, Order, OrderItem
 
 class ToppingModelTest(TestCase):
     def test_create_topping(self):
-        t = Topping.objects.create(name='Pepperoni', slug='pepperoni')
-        self.assertEqual(str(t), 'Pepperoni')
+        t = Topping.objects.create(name='Avocado', slug='avocado')
+        self.assertEqual(str(t), 'Avocado')
 
     def test_auto_slug(self):
         t = Topping(name='Fresh Garlic')
@@ -21,11 +21,11 @@ class ToppingModelTest(TestCase):
 class MenuItemModelTest(TestCase):
     def test_create_menu_item(self):
         item = MenuItem.objects.create(
-            name='Cheese Pizza', category='regular_pizza',
-            size='S', price=Decimal('12.70'), slug='cheese-s'
+            name='Buddha Bowl', category='bowl',
+            size='S', price=Decimal('11.95'), slug='bowl-buddha-s'
         )
-        self.assertIn('Cheese Pizza', str(item))
-        self.assertIn('12.70', str(item))
+        self.assertIn('Buddha Bowl', str(item))
+        self.assertIn('11.95', str(item))
 
     def test_size_display(self):
         item = MenuItem.objects.create(
@@ -39,12 +39,12 @@ class CartModelTest(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpass123')
         self.cart = Cart.objects.create(user=self.user)
         self.item1 = MenuItem.objects.create(
-            name='Cheese Pizza', category='regular_pizza',
-            size='S', price=Decimal('12.70'), slug='cheese-s'
+            name='Buddha Bowl', category='bowl',
+            size='S', price=Decimal('11.95'), slug='bowl-buddha-s'
         )
         self.item2 = MenuItem.objects.create(
-            name='Garden Salad', category='salad',
-            price=Decimal('6.25'), slug='garden-salad'
+            name='Garden Greens', category='salad',
+            price=Decimal('8.50'), slug='garden-greens'
         )
 
     def test_empty_cart_total(self):
@@ -54,7 +54,7 @@ class CartModelTest(TestCase):
     def test_cart_with_items(self):
         CartItem.objects.create(cart=self.cart, menu_item=self.item1, quantity=2)
         CartItem.objects.create(cart=self.cart, menu_item=self.item2, quantity=1)
-        self.assertEqual(self.cart.total, Decimal('31.65'))
+        self.assertEqual(self.cart.total, Decimal('32.40'))
         self.assertEqual(self.cart.item_count, 3)
 
 
@@ -66,7 +66,7 @@ class OrderModelTest(TestCase):
         order = Order.objects.create(user=self.user, total=Decimal('25.40'))
         self.assertEqual(order.status, 'placed')
         OrderItem.objects.create(
-            order=order, item_name='Cheese Pizza (Small)', item_price=Decimal('12.70'), quantity=2
+            order=order, item_name='Buddha Bowl (Small)', item_price=Decimal('11.95'), quantity=2
         )
         self.assertEqual(order.items.count(), 1)
 
@@ -148,14 +148,14 @@ class MenuViewTest(TestCase):
         self.client = Client()
         self.client.login(username='test', password='testpass123')
         MenuItem.objects.create(
-            name='Cheese Pizza', category='regular_pizza',
-            size='S', price=Decimal('12.70'), slug='cheese-s'
+            name='Buddha Bowl', category='bowl',
+            size='S', price=Decimal('11.95'), slug='bowl-buddha-s'
         )
 
     def test_menu_loads(self):
         response = self.client.get(reverse('menu'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Cheese Pizza')
+        self.assertContains(response, 'Buddha Bowl')
 
     def test_menu_requires_login(self):
         self.client.logout()
@@ -169,13 +169,13 @@ class CartFlowTest(TestCase):
         self.client = Client()
         self.client.login(username='test', password='testpass123')
         self.item = MenuItem.objects.create(
-            name='Cheese Pizza', category='regular_pizza',
-            size='S', price=Decimal('12.70'), slug='cheese-s'
+            name='Buddha Bowl', category='bowl',
+            size='S', price=Decimal('11.95'), slug='bowl-buddha-s'
         )
-        self.topping = Topping.objects.create(name='Pepperoni', slug='pepperoni')
+        self.topping = Topping.objects.create(name='Avocado', slug='avocado')
         self.item_with_toppings = MenuItem.objects.create(
-            name='1 Topping Pizza', category='regular_pizza',
-            size='S', price=Decimal('13.70'), slug='1top-s',
+            name='Protein Power Bowl', category='bowl',
+            size='S', price=Decimal('13.50'), slug='bowl-protein-s',
             toppings_allowed=1
         )
 
@@ -216,8 +216,8 @@ class CheckoutFlowTest(TestCase):
         self.client = Client()
         self.client.login(username='test', password='testpass123')
         self.item = MenuItem.objects.create(
-            name='Cheese Pizza', category='regular_pizza',
-            size='S', price=Decimal('12.70'), slug='cheese-s'
+            name='Buddha Bowl', category='bowl',
+            size='S', price=Decimal('11.95'), slug='bowl-buddha-s'
         )
         # Add item to cart
         self.client.post(reverse('cart_add', args=[self.item.id]))
@@ -225,7 +225,7 @@ class CheckoutFlowTest(TestCase):
     def test_checkout_get(self):
         response = self.client.get(reverse('checkout'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Cheese Pizza')
+        self.assertContains(response, 'Buddha Bowl')
 
     def test_checkout_empty_cart(self):
         CartItem.objects.all().delete()
@@ -233,13 +233,13 @@ class CheckoutFlowTest(TestCase):
         self.assertRedirects(response, reverse('cart'))
 
     def test_place_order(self):
-        response = self.client.post(reverse('checkout'), {'notes': 'Extra crispy'})
+        response = self.client.post(reverse('checkout'), {'notes': 'Extra avocado'})
         order = Order.objects.first()
         self.assertIsNotNone(order)
-        self.assertEqual(order.total, Decimal('12.70'))
-        self.assertEqual(order.notes, 'Extra crispy')
+        self.assertEqual(order.total, Decimal('11.95'))
+        self.assertEqual(order.notes, 'Extra avocado')
         self.assertEqual(order.items.count(), 1)
-        self.assertRedirects(response, reverse('order_detail', args=[order.id]))
+        self.assertRedirects(response, f"/order/{order.id}/?placed=1")
         # Cart should be empty
         self.assertEqual(CartItem.objects.count(), 0)
 

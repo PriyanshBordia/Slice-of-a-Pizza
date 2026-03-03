@@ -3,171 +3,157 @@ from orders.models import Topping, MenuItem
 
 
 class Command(BaseCommand):
-    help = 'Seed the database with menu items and toppings'
+    help = 'Seed the database with vegan menu items and toppings'
 
     def handle(self, *args, **options):
         self._seed_toppings()
-        self._seed_regular_pizzas()
-        self._seed_sicilian_pizzas()
-        self._seed_subs()
+        self._seed_bowls()
+        self._seed_wraps()
         self._seed_salads()
-        self._seed_pasta()
-        self._seed_dinner_platters()
-        self.stdout.write(self.style.SUCCESS('Menu seeded successfully!'))
+        self._seed_smoothies()
+        self._seed_sides()
+        self._seed_desserts()
+        self.stdout.write(self.style.SUCCESS('Vegan menu seeded successfully!'))
 
     def _seed_toppings(self):
         toppings = [
-            'Pepperoni', 'Sausage', 'Mushrooms', 'Onions', 'Ham',
-            'Canadian Bacon', 'Pineapple', 'Eggplant', 'Tomato & Basil',
-            'Green Peppers', 'Hamburger', 'Spinach', 'Artichoke',
-            'Buffalo Chicken', 'Barbecue Chicken', 'Anchovies',
-            'Black Olives', 'Fresh Garlic', 'Zucchini',
+            'Avocado', 'Tempeh Bacon', 'Roasted Chickpeas', 'Hemp Seeds',
+            'Pickled Onions', 'Jalapeños', 'Crispy Tofu', 'Cashew Crema',
+            'Sriracha Drizzle', 'Tahini Dressing', 'Nutritional Yeast',
+            'Sun-Dried Tomatoes', 'Kimchi', 'Roasted Sweet Potato',
+            'Mango Salsa', 'Pumpkin Seeds', 'Cilantro-Lime Crema',
+            'Sauerkraut', 'Coconut Flakes',
         ]
         for name in toppings:
             Topping.objects.get_or_create(name=name)
         self.stdout.write(f'  Created {len(toppings)} toppings')
 
-    def _seed_regular_pizzas(self):
+    def _seed_bowls(self):
         items = [
-            ('Cheese Pizza', 'S', '12.70'),
-            ('Cheese Pizza', 'L', '17.95'),
-            ('1 Topping Pizza', 'S', '13.70', 1),
-            ('1 Topping Pizza', 'L', '19.95', 1),
-            ('2 Topping Pizza', 'S', '15.20', 2),
-            ('2 Topping Pizza', 'L', '21.95', 2),
-            ('3 Topping Pizza', 'S', '16.20', 3),
-            ('3 Topping Pizza', 'L', '23.95', 3),
-            ('Special Pizza', 'S', '17.75', 5),
-            ('Special Pizza', 'L', '25.95', 5),
+            ('Buddha Bowl', 'S', '11.95', 2),
+            ('Buddha Bowl', 'L', '14.95', 2),
+            ('Teriyaki Tempeh Bowl', 'S', '12.50', 2),
+            ('Teriyaki Tempeh Bowl', 'L', '15.50', 2),
+            ('Mediterranean Bowl', 'S', '11.95', 2),
+            ('Mediterranean Bowl', 'L', '14.95', 2),
+            ('Spicy Korean Bowl', 'S', '12.95', 3),
+            ('Spicy Korean Bowl', 'L', '15.95', 3),
+            ('Harvest Bowl', 'S', '11.50', 2),
+            ('Harvest Bowl', 'L', '14.50', 2),
+            ('Protein Power Bowl', 'S', '13.50', 3),
+            ('Protein Power Bowl', 'L', '16.50', 3),
         ]
         for item in items:
             name, size, price = item[0], item[1], item[2]
             toppings = item[3] if len(item) > 3 else 0
             MenuItem.objects.get_or_create(
-                name=name, category='regular_pizza', size=size,
+                name=name, category='bowl', size=size,
                 defaults={'price': price, 'toppings_allowed': toppings,
-                          'slug': f'regular-{name.lower().replace(" ", "-")}-{size.lower()}'}
+                          'slug': f'bowl-{name.lower().replace(" ", "-")}-{size.lower()}'}
             )
-        self.stdout.write(f'  Created {len(items)} regular pizzas')
+        self.stdout.write(f'  Created {len(items)} bowls')
 
-    def _seed_sicilian_pizzas(self):
+    def _seed_wraps(self):
         items = [
-            ('Cheese Pizza', 'S', '24.45'),
-            ('Cheese Pizza', 'L', '38.70'),
-            ('1 Topping Pizza', 'S', '26.45', 1),
-            ('1 Topping Pizza', 'L', '40.70', 1),
-            ('2 Topping Pizza', 'S', '28.45', 2),
-            ('2 Topping Pizza', 'L', '42.70', 2),
-            ('3 Topping Pizza', 'S', '29.45', 3),
-            ('3 Topping Pizza', 'L', '44.70', 3),
-            ('Special Pizza', 'S', '30.45', 5),
-            ('Special Pizza', 'L', '46.70', 5),
-        ]
-        for item in items:
-            name, size, price = item[0], item[1], item[2]
-            toppings = item[3] if len(item) > 3 else 0
-            MenuItem.objects.get_or_create(
-                name=name, category='sicilian_pizza', size=size,
-                defaults={'price': price, 'toppings_allowed': toppings,
-                          'slug': f'sicilian-{name.lower().replace(" ", "-")}-{size.lower()}'}
-            )
-        self.stdout.write(f'  Created {len(items)} sicilian pizzas')
-
-    def _seed_subs(self):
-        items = [
-            ('Cheese Sub', 'S', '6.50'),
-            ('Cheese Sub', 'L', '7.95'),
-            ('Italian Sub', 'S', '6.50'),
-            ('Italian Sub', 'L', '7.95'),
-            ('Ham + Cheese Sub', 'S', '6.50'),
-            ('Ham + Cheese Sub', 'L', '7.95'),
-            ('Meatball Sub', 'S', '6.50'),
-            ('Meatball Sub', 'L', '7.95'),
-            ('Tuna Sub', 'S', '6.50'),
-            ('Tuna Sub', 'L', '7.95'),
-            ('Turkey Sub', 'S', '7.50'),
-            ('Turkey Sub', 'L', '8.50'),
-            ('Chicken Parm Sub', 'S', '7.50'),
-            ('Chicken Parm Sub', 'L', '8.50'),
-            ('Eggplant Parm Sub', 'S', '6.50'),
-            ('Eggplant Parm Sub', 'L', '7.95'),
-            ('Steak Sub', 'S', '6.50'),
-            ('Steak Sub', 'L', '7.95'),
-            ('Steak + Cheese Sub', 'S', '6.95'),
-            ('Steak + Cheese Sub', 'L', '8.50'),
-            ('Steak + Mushrooms Sub', 'S', '6.95'),
-            ('Steak + Mushrooms Sub', 'L', '8.50'),
-            ('Steak + Peppers Sub', 'S', '6.95'),
-            ('Steak + Peppers Sub', 'L', '8.50'),
-            ('Steak + Onions Sub', 'S', '6.95'),
-            ('Steak + Onions Sub', 'L', '8.50'),
-            ('Hamburger Sub', 'S', '4.60'),
-            ('Hamburger Sub', 'L', '6.95'),
-            ('Cheeseburger Sub', 'S', '5.10'),
-            ('Cheeseburger Sub', 'L', '7.45'),
-            ('Fried Chicken Sub', 'S', '6.95'),
-            ('Fried Chicken Sub', 'L', '8.50'),
-            ('Veggie Sub', 'S', '6.95'),
-            ('Veggie Sub', 'L', '8.50'),
-            ('Sausage + Peppers + Onions Sub', 'S', '8.50'),
-            ('Sausage + Peppers + Onions Sub', 'L', '13.50'),
+            ('Falafel Wrap', 'S', '9.95'),
+            ('Falafel Wrap', 'L', '12.95'),
+            ('BBQ Jackfruit Wrap', 'S', '10.50'),
+            ('BBQ Jackfruit Wrap', 'L', '13.50'),
+            ('Thai Peanut Wrap', 'S', '9.95'),
+            ('Thai Peanut Wrap', 'L', '12.95'),
+            ('Caesar Wrap', 'S', '9.50'),
+            ('Caesar Wrap', 'L', '12.50'),
+            ('Buffalo Cauliflower Wrap', 'S', '10.50'),
+            ('Buffalo Cauliflower Wrap', 'L', '13.50'),
+            ('Garden Veggie Wrap', 'S', '8.95'),
+            ('Garden Veggie Wrap', 'L', '11.95'),
         ]
         for name, size, price in items:
             MenuItem.objects.get_or_create(
-                name=name, category='sub', size=size,
+                name=name, category='wrap', size=size,
                 defaults={'price': price,
-                          'slug': f'sub-{name.lower().replace(" ", "-").replace("+", "and")}-{size.lower()}'}
+                          'slug': f'wrap-{name.lower().replace(" ", "-")}-{size.lower()}'}
             )
-        self.stdout.write(f'  Created {len(items)} subs')
+        self.stdout.write(f'  Created {len(items)} wraps')
 
     def _seed_salads(self):
         items = [
-            ('Garden Salad', '6.25'),
-            ('Greek Salad', '8.25'),
-            ('Antipasto', '8.25'),
-            ('Salad w/ Tuna', '8.25'),
+            ('Kale Caesar Salad', '10.95'),
+            ('Rainbow Quinoa Salad', '11.50'),
+            ('Thai Crunch Salad', '10.95'),
+            ('Roasted Beet & Walnut Salad', '11.95'),
+            ('Garden Greens', '8.50'),
         ]
         for name, price in items:
             MenuItem.objects.get_or_create(
                 name=name, category='salad',
                 defaults={'price': price,
-                          'slug': f'salad-{name.lower().replace(" ", "-").replace("/", "")}'}
+                          'slug': f'salad-{name.lower().replace(" ", "-").replace("&", "and")}'}
             )
         self.stdout.write(f'  Created {len(items)} salads')
 
-    def _seed_pasta(self):
+    def _seed_smoothies(self):
         items = [
-            ('Baked Ziti w/ Mozzarella', '6.50'),
-            ('Baked Ziti w/ Meatballs', '8.75'),
-            ('Baked Ziti w/ Chicken', '9.75'),
-        ]
-        for name, price in items:
-            MenuItem.objects.get_or_create(
-                name=name, category='pasta',
-                defaults={'price': price,
-                          'slug': f'pasta-{name.lower().replace(" ", "-").replace("/", "")}'}
-            )
-        self.stdout.write(f'  Created {len(items)} pasta items')
-
-    def _seed_dinner_platters(self):
-        items = [
-            ('Garden Salad Platter', 'S', '35.00'),
-            ('Garden Salad Platter', 'L', '60.00'),
-            ('Greek Salad Platter', 'S', '45.00'),
-            ('Greek Salad Platter', 'L', '70.00'),
-            ('Antipasto Platter', 'S', '45.00'),
-            ('Antipasto Platter', 'L', '70.00'),
-            ('Baked Ziti Platter', 'S', '35.00'),
-            ('Baked Ziti Platter', 'L', '60.00'),
-            ('Meatball Parm Platter', 'S', '45.00'),
-            ('Meatball Parm Platter', 'L', '70.00'),
-            ('Chicken Parm Platter', 'S', '45.00'),
-            ('Chicken Parm Platter', 'L', '70.00'),
+            ('Green Goddess Smoothie', 'S', '6.95'),
+            ('Green Goddess Smoothie', 'L', '8.95'),
+            ('Tropical Bliss Smoothie', 'S', '6.95'),
+            ('Tropical Bliss Smoothie', 'L', '8.95'),
+            ('Berry Antioxidant Smoothie', 'S', '7.50'),
+            ('Berry Antioxidant Smoothie', 'L', '9.50'),
+            ('Peanut Butter Banana Smoothie', 'S', '7.50'),
+            ('Peanut Butter Banana Smoothie', 'L', '9.50'),
+            ('Matcha Oat Latte', 'S', '5.95'),
+            ('Matcha Oat Latte', 'L', '7.50'),
+            ('Golden Turmeric Latte', 'S', '5.50'),
+            ('Golden Turmeric Latte', 'L', '7.00'),
         ]
         for name, size, price in items:
             MenuItem.objects.get_or_create(
-                name=name, category='dinner_platter', size=size,
+                name=name, category='smoothie', size=size,
                 defaults={'price': price,
-                          'slug': f'platter-{name.lower().replace(" ", "-")}-{size.lower()}'}
+                          'slug': f'smoothie-{name.lower().replace(" ", "-")}-{size.lower()}'}
             )
-        self.stdout.write(f'  Created {len(items)} dinner platters')
+        self.stdout.write(f'  Created {len(items)} smoothies')
+
+    def _seed_sides(self):
+        items = [
+            ('Sweet Potato Fries', '5.50'),
+            ('Crispy Brussels Sprouts', '6.95'),
+            ('Avocado Toast', '7.50'),
+            ('Garlic Hummus & Pita', '5.95'),
+            ('Coconut Cauliflower Bites', '6.50'),
+            ('Edamame', '4.95'),
+        ]
+        for name, price in items:
+            MenuItem.objects.get_or_create(
+                name=name, category='side',
+                defaults={'price': price,
+                          'slug': f'side-{name.lower().replace(" ", "-").replace("&", "and")}'}
+            )
+        self.stdout.write(f'  Created {len(items)} sides')
+
+    def _seed_desserts(self):
+        items = [
+            ('Açaí Bowl', 'S', '9.50'),
+            ('Açaí Bowl', 'L', '12.50'),
+            ('Raw Brownie Bites', '6.95'),
+            ('Coconut Chia Pudding', '5.95'),
+            ('Banana Nice Cream', '6.50'),
+            ('Matcha Energy Balls', '4.95'),
+        ]
+        for item in items:
+            if len(item) == 3:
+                name, size, price = item
+                MenuItem.objects.get_or_create(
+                    name=name, category='dessert', size=size,
+                    defaults={'price': price,
+                              'slug': f'dessert-{name.lower().replace(" ", "-")}-{size.lower()}'}
+                )
+            else:
+                name, price = item[0], item[1]
+                MenuItem.objects.get_or_create(
+                    name=name, category='dessert',
+                    defaults={'price': price,
+                              'slug': f'dessert-{name.lower().replace(" ", "-")}'}
+                )
+        self.stdout.write(f'  Created {len(items)} desserts')

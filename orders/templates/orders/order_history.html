@@ -1,30 +1,35 @@
 {% extends "orders/base.html" %}
 
-{% block title %}Order History - Slice of a Pizza{% endblock %}
+{% block title %}Order History - Seed &amp; Sprout{% endblock %}
 
 {% block body %}
-<h2 class="page-title">Order History</h2>
+<h2 class="font-display text-3xl font-bold text-charcoal mb-1">Order History</h2>
+<div class="artisan-divider w-16 mb-6"></div>
 
 {% if orders %}
-<div class="order-history-list">
+<div class="space-y-3">
     {% for order in orders %}
-    <div class="order-history-card">
-        <div class="order-history-info">
-            <div class="order-history-id">Order #{{ order.id }}</div>
-            <div class="order-history-date">{{ order.created_at|date:"M j, Y g:i A" }} &middot; {{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+    <a href="{% url 'order_detail' order.id %}" class="block bg-white rounded-artisan shadow-warm p-5 hover:shadow-warm-lg hover:-translate-y-0.5 transition-all group">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="font-display text-lg font-semibold text-charcoal group-hover:text-terracotta transition-colors">Order #{{ order.id }}</span>
+                    <span class="inline-block px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider rounded-full status-{{ order.status }}">{{ order.get_status_display }}</span>
+                </div>
+                <p class="text-xs text-charcoal-light/50 mt-0.5">{{ order.created_at|date:"M j, Y g:i A" }} &middot; {{ order.items.count }} item{{ order.items.count|pluralize }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="font-display text-xl font-bold text-charcoal">${{ order.total }}</span>
+                <span class="text-terracotta text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">View &rarr;</span>
+            </div>
         </div>
-        <div class="order-history-meta">
-            <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
-            <span class="order-history-total">${{ order.total }}</span>
-            <a href="{% url 'order_detail' order.id %}" class="view-link">View Details &rarr;</a>
-        </div>
-    </div>
+    </a>
     {% endfor %}
 </div>
 {% else %}
-<div class="empty-state">
-    <p>You haven't placed any orders yet.</p>
-    <a href="{% url 'menu' %}" class="btn btn-brand">Browse Menu</a>
+<div class="text-center py-12">
+    <p class="text-charcoal-light/50 text-lg mb-4 font-display">You haven't placed any orders yet.</p>
+    <a href="{% url 'menu' %}" class="inline-block bg-terracotta hover:bg-terracotta-dark text-white font-semibold px-6 py-2.5 rounded-artisan transition-all hover:-translate-y-0.5">Browse Menu</a>
 </div>
 {% endif %}
 {% endblock %}
